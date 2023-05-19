@@ -1,7 +1,6 @@
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
 async function getDefaultImage(title) {
-    // TODO IMPLEMENT ME
     const response = await openai.createImage({
         prompt: title,
         n: 1,
