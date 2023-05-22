@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var uniqueValidator = require("mongoose-unique-validator");
 var slug = require("slug");
 var User = mongoose.model("User");
+var image = require("../lib/image");
 
 var ItemSchema = new mongoose.Schema(
   {
@@ -24,6 +25,10 @@ ItemSchema.pre("validate", function(next) {
     this.slugify();
   }
 
+  if (!this.image) {
+
+  }
+
   next();
 });
 
@@ -32,6 +37,10 @@ ItemSchema.methods.slugify = function() {
     slug(this.title) +
     "-" +
     ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+};
+
+ItemSchema.methods.getDefaultImage = function() {
+  this.image = image.getDefaultImage(this.title);
 };
 
 ItemSchema.methods.updateFavoriteCount = function() {
