@@ -4,11 +4,9 @@ const {
   describe,
   beforeEach,
   test,
-  jest
 } = require("@jest/globals");
 
 const { AnythinkClient } = require("../anytinkClient");
-const { getDefaultTitle, getDefaultImage } = require("../../../backend/lib/image");
 const {
   randomItemInfo,
   randomUserInfo,
@@ -55,14 +53,15 @@ describe("Items Route", () => {
     });
 
     test("Can create item without image", async () => {
-      const STUB_IMAGE = "stub image";
       jest.mock("../../../backend/lib/image");
-      getDefaultImage.mockResolvedValue(STUB_IMAGE);
+      const image = require("../../../backend/lib/image");
+      const STUB_IMAGE = "stub image";
+      image.getDefaultImage.mockResolvedValue(STUB_IMAGE);
       const createdItem = await anythinkClient.createItem(
         randomItemInfo({ image: undefined }),
         user
       );
-      expect(createdItem.image).toBeTruthy();
+      expect(createdItem.image).toBe(STUB_IMAGE);
       expect(createdItem.slug).toBeDefined();
     });
 
