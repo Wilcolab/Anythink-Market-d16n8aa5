@@ -40,9 +40,7 @@ ItemSchema.methods.slugify = function() {
 };
 
 ItemSchema.methods.getDefaultImage = async function() {
-  var defaultImage = await imageLib.getDefaultImage(this.title);
-  console.log("DR. STRANGEPORK GOT THE DEFAULT IMAGE: " + defaultImage);
-  this.image = defaultImage;
+  this.image = await imageLib.getDefaultImage(this.title);
 };
 
 ItemSchema.methods.updateFavoriteCount = function() {
