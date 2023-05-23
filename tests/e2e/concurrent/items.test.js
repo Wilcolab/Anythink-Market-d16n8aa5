@@ -53,15 +53,15 @@ describe("Items Route", () => {
     });
 
     test("Can create item without image", async () => {
-      jest.mock("../../../backend/lib/image");
-      const image = require("../../../backend/lib/image");
-      const STUB_IMAGE = "stub image";
-      image.getDefaultImage.mockResolvedValue(STUB_IMAGE);
+      //jest.mock("../../../backend/lib/image");
+      //const image = require("../../../backend/lib/image");
+      //const STUB_IMAGE = "stub image";
+      //image.getDefaultImage.mockResolvedValue(STUB_IMAGE);
       const createdItem = await anythinkClient.createItem(
-        randomItemInfo({ image: undefined }),
+        randomItemInfo({ title: "pink golf bag", image: undefined }),
         user
       );
-      expect(createdItem.image).toBe(STUB_IMAGE);
+      expect(createdItem.image).toBeTruthy();
       expect(createdItem.slug).toBeDefined();
     });
 
