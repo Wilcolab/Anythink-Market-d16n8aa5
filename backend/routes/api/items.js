@@ -5,7 +5,6 @@ var Comment = mongoose.model("Comment");
 var User = mongoose.model("User");
 var auth = require("../auth");
 const { sendEvent } = require("../../lib/event");
-const { getDefaultImage } = require("../../lib/image");
 
 // Preload item objects on routes with ':item'
 router.param("item", function(req, res, next, slug) {
@@ -15,12 +14,6 @@ router.param("item", function(req, res, next, slug) {
       if (!item) {
         return res.sendStatus(404);
       }
-
-      if (!item.image) {
-        Promise.all([getDefaultImage(item.title)]).then((defaultImage) => item.image = defaultImage);
-      }
-
-      console.log("DR. STRANGEPORK LOGGING HIS ITEM IMAGE IN THE SINGLE-ITEM ENDPOINT" + item.image);
 
       req.item = item;
 
