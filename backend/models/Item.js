@@ -20,13 +20,13 @@ var ItemSchema = new mongoose.Schema(
 
 ItemSchema.plugin(uniqueValidator, { message: "is already taken" });
 
-ItemSchema.pre("validate", function(next) {
+ItemSchema.pre("validate", async function(next) {
   if (!this.slug) {
     this.slugify();
   }
 
   if (!this.image) {
-    this.getDefaultImage();
+    await this.getDefaultImage();
   }
 
   next();
@@ -39,8 +39,10 @@ ItemSchema.methods.slugify = function() {
     ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
 };
 
-ItemSchema.methods.getDefaultImage = function() {
-  this.image = imageLib.getDefaultImage(this.title);
+ItemSchema.methods.getDefaultImage = async function() {
+  var defaultImage = await imageLib.getDefaultImage(this.title);
+  console.log("DR. STRANGEPORK GOT THE DEFAULT IMAGE: " + defaultImage);
+  this.image = defaultImage;
 };
 
 ItemSchema.methods.updateFavoriteCount = function() {
