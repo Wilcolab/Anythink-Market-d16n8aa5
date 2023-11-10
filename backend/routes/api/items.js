@@ -5,7 +5,6 @@ var Comment = mongoose.model("Comment");
 var User = mongoose.model("User");
 var auth = require("../auth");
 const { sendEvent } = require("../../lib/event");
-var axios = require("axios");
 
 // Preload item objects on routes with ':item'
 router.param("item", function(req, res, next, slug) {
@@ -139,26 +138,8 @@ router.get("/feed", auth.required, function(req, res, next) {
 });
 
 router.post("/", auth.required, function(req, res, next) {
-  async function generateImage(prompt) {
-    return await axios.post('https://api.openai.com/v1/images/generations', JSON.stringify({
-        'prompt': `${prompt}`,
-        'n': 1,
-        'size': '256x256'
-    }), {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-        }
-    }).then(function (response) {
-        return response.data.data[0].url;
-    })
-    .catch(function (error) {
-        console.log(`Image genrator failed with the error: ${error}`)
-        return '';
-    });
-  };
   User.findById(req.payload.id)
-    .then(async function(user) {
+    .then(function(user) {
       if (!user) {
         return res.sendStatus(401);
       }
@@ -166,10 +147,6 @@ router.post("/", auth.required, function(req, res, next) {
       var item = new Item(req.body.item);
 
       item.seller = user;
-
-      if (!item.image) {
-        item.image = await generateImage(item.title);
-      }
 
       return item.save().then(function() {
         sendEvent('item_created', { item: req.body.item })
@@ -338,21 +315,17 @@ router.delete("/:item/comments/:comment", auth.required, function(
   res,
   next
 ) {
-  if (req.comment.seller.toString() === req.payload.id.toString()) {
-    req.item.comments.remove(req.comment._id);
-    req.item
-      .save()
-      .then(
-        Comment.find({ _id: req.comment._id })
-          .remove()
-          .exec()
-      )
-      .then(function() {
-        res.sendStatus(204);
-      });
-  } else {
-    res.sendStatus(403);
-  }
+  req.item.comments.remove(req.comment._id);
+  req.item
+    .save()
+    .then(
+      Comment.find({ _id: req.comment._id })
+        .remove()
+        .exec()
+    )
+    .then(function() {
+      res.sendStatus(204);
+    });
 });
 
 module.exports = router;
